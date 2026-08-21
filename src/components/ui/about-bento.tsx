@@ -168,8 +168,8 @@ export function AboutBento() {
                     Launch your <em className="italic text-white/60">neuro-inclusive</em> journey.
                   </h4>
                 </div>
-                <div className="w-12 sm:w-14 h-12 sm:h-14 shrink-0 rounded-full flex items-center justify-center bg-white text-black group-hover:scale-110 transition-all duration-500 relative z-10 shadow-[0_0_25px_rgba(255,255,255,0.3)]">
-                  <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6" />
+                <div className="w-12 sm:w-14 h-12 sm:h-14 shrink-0 rounded-full flex items-center justify-center bg-white text-black group-hover:scale-105 group-hover:bg-neutral-100 transition-all duration-300 relative z-10 shadow-[0_0_25px_rgba(255,255,255,0.3)]">
+                  <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 group-hover:translate-x-1 transition-transform duration-300 ease-out" />
                 </div>
               </Card>
             </Link>
