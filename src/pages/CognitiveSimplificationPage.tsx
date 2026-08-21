@@ -1,22 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Brain, Sparkles, RotateCcw, Key } from 'lucide-react';
+import { ArrowLeft, Brain, Sparkles, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CognitiveSimplificationPage() {
   const [text, setText] = useState('Mitochondria are membrane-bound cell organelles that generate most of the chemical energy needed to power the cell\'s biochemical reactions. Chemical energy produced by the mitochondria is stored in a small molecule called adenosine triphosphate (ATP). Mitochondria contain their own small chromosomes. Generally, mitochondria, and therefore mitochondrial DNA, are inherited only from the mother.');
-  const [apiKey, setApiKey] = useState(localStorage.getItem('openrouter_key') || '');
+  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
   const [isSimplifying, setIsSimplifying] = useState(false);
   const [simplifiedPoints, setSimplifiedPoints] = useState<Array<{ text: string, color: string }> | null>(null);
-
-  useEffect(() => {
-    localStorage.setItem('openrouter_key', apiKey);
-  }, [apiKey]);
 
   const handleSimplify = async () => {
     if (!text.trim()) return;
     if (!apiKey.trim()) {
-      alert("Please enter your OpenRouter API Key first.");
+      alert("API Key is missing from .env file.");
       return;
     }
 
@@ -113,18 +109,8 @@ export default function CognitiveSimplificationPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Cognitive Simplification</h1>
           <p className="text-white/60 text-lg max-w-2xl mx-auto mb-8">Extract core concepts from dense, difficult text and reduce cognitive load instantly.</p>
 
-          <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-6 py-3 max-w-md w-full">
-            <Key className="w-4 h-4 text-white/50" />
-            <input
-              type="password"
-              placeholder="Enter OpenRouter API Key (sk-or-v1-...)"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="bg-transparent border-none text-white text-sm focus:outline-none w-full"
-            />
-          </div>
           <p className="text-white/40 text-xs mt-3">
-            Using <span className="text-white/70">stealth/ox-alpha</span>. Your key is stored locally in your browser.
+            Using <span className="text-white/70">stealth/ox-alpha</span>. API Key loaded from environment.
           </p>
         </div>
 
