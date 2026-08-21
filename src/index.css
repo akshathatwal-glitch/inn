@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @font-face {
   font-family: 'OpenDyslexic';
@@ -10,64 +11,128 @@
 
 @theme {
   --font-serif: "Instrument Serif", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
 }
 
+/* ───────────────────────────── Overlay Colors ───────────────────────────── */
+[data-overlay="cream"] .overlay-bg  { background-color: #fcf8ee !important; color: #2c2518 !important; }
+[data-overlay="blue"]  .overlay-bg  { background-color: #f0f4fc !important; color: #162238 !important; }
+[data-overlay="mint"]  .overlay-bg  { background-color: #f0f8f3 !important; color: #162e1d !important; }
+[data-overlay="rose"]  .overlay-bg  { background-color: #fdf2f7 !important; color: #2e1222 !important; }
+[data-overlay="none"]  .overlay-bg  { background-color: rgba(0,0,0,0.6); color: rgba(255,255,255,0.92); }
+
+/* ──────────────────────────── Syllable Highlight ────────────────────────── */
+.syllable-even { color: #93c5fd; font-weight: 500; }
+.syllable-odd  { color: #f472b6; font-weight: 500; }
+
+/* ───────────────────────────── Reading Ruler ────────────────────────────── */
+.reading-ruler-container { position: relative; }
+.reading-ruler {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2.4em;
+  background: rgba(255, 255, 255, 0.08);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  transition: top 0.08s ease-out;
+  border-radius: 6px;
+}
+
+/* ─────────────────────────── Sensory Mode ───────────────────────────────── */
 @layer utilities {
   .font-dyslexic {
     font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
   }
-  
+
   body.sensory-mode {
-    background-color: #121212 !important; /* Extremely dark, muted background */
-    color: #9e9e9e !important; /* Low contrast text to prevent eye strain */
+    background-color: #0d0d0d !important;
+    color: #8e8e8e !important;
   }
 
   body.sensory-mode * {
-    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease !important;
+    transition: background-color 0.6s ease, color 0.6s ease, border-color 0.6s ease !important;
   }
-  
+
   .sensory-mode .liquid-glass {
-    background: rgba(30, 30, 30, 0.4) !important;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.02) !important;
+    background: rgba(20, 20, 20, 0.6) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.04) !important;
   }
-  
+
   .sensory-mode img, .sensory-mode video, .sensory-mode svg {
     opacity: 0.6 !important;
     filter: grayscale(40%) contrast(0.8) !important;
   }
+
+  .progress-ring-circle {
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
 }
 
+/* ─────────────────────────── Core Components ────────────────────────────── */
 @layer components {
   .liquid-glass {
-    background: rgba(255, 255, 255, 0.01);
+    background: rgba(255, 255, 255, 0.02);
     background-blend-mode: luminosity;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: none;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    position: relative;
+  }
+
+  .liquid-glass-subtle {
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .liquid-glass-glow {
     position: relative;
     overflow: hidden;
   }
 
-  .liquid-glass::before {
+  .liquid-glass-glow::before {
     content: '';
     position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1.4px;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.45) 0%,
-      rgba(255, 255, 255, 0.15) 20%,
-      rgba(255, 255, 255, 0) 40%,
-      rgba(255, 255, 255, 0) 60%,
-      rgba(255, 255, 255, 0.15) 80%,
-      rgba(255, 255, 255, 0.45) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     pointer-events: none;
+  }
+
+  /* App shell layout */
+  .app-sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 40;
+  }
+
+  .app-main {
+    margin-left: 260px;
+    min-height: 100vh;
+    background: #000000;
+    position: relative;
+  }
+
+  @media (max-width: 1024px) {
+    .app-main {
+      margin-left: 0;
+    }
   }
 }
