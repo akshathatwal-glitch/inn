@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Globe, ArrowRight, Focus, X, Play, ExternalLink } from 'lucide-react';
-import PrototypeModal from './PrototypeModal';
+import { useModal } from '../hooks/useModal';
 
 export default function HeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openModal } = useModal();
 
   useEffect(() => {
     const video = videoRef.current;
@@ -81,17 +81,17 @@ export default function HeroSection() {
           <div className="liquid-glass rounded-full max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
             <div className="flex items-center">
               <Globe className="w-6 h-6 text-white mr-2" />
-              <span className="text-white font-semibold text-lg">AdaptLearn</span>
+              <span className="text-white font-semibold text-lg cursor-pointer" onClick={openModal}>AdaptLearn</span>
               <div className="hidden md:flex items-center gap-8 ml-8">
-                <a href="#" className="text-white/80 hover:text-white text-sm font-medium transition-colors">The Problem</a>
-                <a href="#" className="text-white/80 hover:text-white text-sm font-medium transition-colors">AI Solution</a>
-                <a href="#" className="text-white/80 hover:text-white text-sm font-medium transition-colors">Impact</a>
+                <a href="#impact" className="text-white/80 hover:text-white text-sm font-medium transition-colors cursor-pointer">The Problem</a>
+                <a href="#solution" className="text-white/80 hover:text-white text-sm font-medium transition-colors cursor-pointer">AI Solution</a>
+                <a href="#impact" className="text-white/80 hover:text-white text-sm font-medium transition-colors cursor-pointer">Impact</a>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <button className="text-white text-sm font-medium hidden md:block">Login</button>
+              <button onClick={openModal} className="text-white text-sm font-medium hidden md:block">Login</button>
               <button 
-                onClick={() => setIsModalOpen(true)}
+                onClick={openModal}
                 className="liquid-glass rounded-full px-6 py-2 text-white text-sm font-medium"
               >
                 Try Prototype
@@ -111,7 +111,7 @@ export default function HeroSection() {
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
             <button 
-              onClick={() => setIsModalOpen(true)}
+              onClick={openModal}
               className="bg-white text-black rounded-full px-8 py-3 text-sm font-semibold hover:bg-gray-200 transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
             >
               Experience the Prototype <ExternalLink className="w-4 h-4" />
@@ -123,19 +123,17 @@ export default function HeroSection() {
         </div>
 
         <div className="relative z-10 flex justify-center gap-4 pb-12">
-          <button className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
+          <button onClick={openModal} className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
             <Focus className="w-5 h-5" />
           </button>
-          <button className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
+          <button onClick={openModal} className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
             <X className="w-5 h-5" />
           </button>
-          <button className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
+          <button onClick={openModal} className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
             <Globe className="w-5 h-5" />
           </button>
         </div>
       </div>
-
-      <PrototypeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }
