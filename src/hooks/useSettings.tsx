@@ -48,10 +48,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     } else {
       document.body.classList.remove('sensory-mode');
     }
-
-    document.body.style.lineHeight = settings.lineHeight.toString();
-    document.body.style.letterSpacing = `${settings.letterSpacing}px`;
     
+    // We intentionally removed document.body.style.lineHeight and letterSpacing
+    // so they can be explicitly applied only to reading containers
   }, [settings]);
 
   const updateSetting = <K extends keyof AdaptLearnSettings>(key: K, value: AdaptLearnSettings[K]) => {

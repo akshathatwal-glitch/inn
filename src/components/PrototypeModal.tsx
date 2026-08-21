@@ -172,7 +172,11 @@ export default function PrototypeModal({ isOpen, onClose }: { isOpen: boolean, o
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="text-white/80 text-lg"
+                    className="text-white/80 text-lg transition-all duration-300"
+                    style={{ 
+                      lineHeight: settings.lineHeight, 
+                      letterSpacing: `${settings.letterSpacing}px` 
+                    }}
                   >
                     Mitochondria are membrane-bound cell organelles that generate most of the chemical energy needed to power the cell's biochemical reactions. Chemical energy produced by the mitochondria is stored in a small molecule called adenosine triphosphate (ATP). Mitochondria contain their own small chromosomes. Generally, mitochondria, and therefore mitochondrial DNA, are inherited only from the mother.
                   </motion.div>
@@ -181,7 +185,11 @@ export default function PrototypeModal({ isOpen, onClose }: { isOpen: boolean, o
                     key="simplified-text"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="space-y-4"
+                    className="space-y-4 transition-all duration-300"
+                    style={{ 
+                      lineHeight: settings.lineHeight, 
+                      letterSpacing: `${settings.letterSpacing}px` 
+                    }}
                   >
                     {[
                       { color: "text-blue-400", text: "Mitochondria produce most of the cell's chemical energy." },

@@ -1,23 +1,40 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('./assets/open_dyslexic/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @theme {
   --font-serif: "Instrument Serif", serif;
 }
 
 @layer utilities {
   .font-dyslexic {
-    font-family: 'Comic Sans MS', 'OpenDyslexic', sans-serif !important;
+    font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
   }
   
   body.sensory-mode {
-    background-color: #1a201c !important; /* Soft dark sage/olive tone */
-    color: #e0e8e3 !important;
+    background-color: #121212 !important; /* Extremely dark, muted background */
+    color: #9e9e9e !important; /* Low contrast text to prevent eye strain */
+  }
+
+  body.sensory-mode * {
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease !important;
   }
   
   .sensory-mode .liquid-glass {
-    background: rgba(160, 180, 165, 0.05) !important;
-    box-shadow: inset 0 1px 1px rgba(160, 180, 165, 0.1) !important;
+    background: rgba(30, 30, 30, 0.4) !important;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.02) !important;
+  }
+  
+  .sensory-mode img, .sensory-mode video, .sensory-mode svg {
+    opacity: 0.6 !important;
+    filter: grayscale(40%) contrast(0.8) !important;
   }
 }
 
