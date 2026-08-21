@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Type, Brain, Eye, BookOpen, User,
-  Globe, ArrowUpRight, Menu, X, ArrowLeft
+  Globe, ArrowUpRight, Menu, X, ArrowLeft, Layers
 } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
 
@@ -12,6 +12,7 @@ const navItems = [
   { to: '/feature/formatting', icon: Type, label: 'Text Formatting', badge: 'Core' },
   { to: '/feature/simplification', icon: Brain, label: 'AI Simplification', badge: 'AI' },
   { to: '/feature/sensory', icon: Eye, label: 'Focus Mode', badge: 'Zen' },
+  { to: '/feature/flashcards', icon: Layers, label: 'Flashcard Studio', badge: 'Recall' },
   { to: '/feature/library', icon: BookOpen, label: 'Content Library', badge: 'Read' },
   { to: '/feature/profile', icon: User, label: 'Learner Profile', badge: 'Custom' },
 ];

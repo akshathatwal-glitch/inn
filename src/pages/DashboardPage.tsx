@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   Type, Brain, Eye, BookOpen, User, Play, Pause,
   RotateCcw, Flame, Clock, BookMarked, Sparkles,
-  ArrowUpRight, TrendingUp, CheckCircle2, ChevronRight
+  ArrowUpRight, TrendingUp, CheckCircle2, ChevronRight, Layers
 } from 'lucide-react';
 import AppShell from '../components/AppShell';
 import { useSettings } from '../hooks/useSettings';
@@ -216,6 +216,34 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
+        {/* Quick Start Today */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+          className="liquid-glass rounded-3xl p-5 sm:p-7 border border-white/10 shadow-xl"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs font-mono text-white/50 uppercase tracking-widest">Quick Start — Try Every Engine</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { to: '/feature/formatting', label: 'Dynamic Formatting', hint: 'Upload text → See dyslexic-friendly rendering', color: 'bg-amber-400/10 border-amber-400/30 text-amber-300' },
+              { to: '/feature/simplification', label: 'AI Simplification', hint: 'Paste a chapter → Get instant mind map & bullets', color: 'bg-violet-400/10 border-violet-400/30 text-violet-300' },
+              { to: '/feature/sensory', label: 'Sensory Mode', hint: 'Enter zen canvas → Start Pomodoro + soundscapes', color: 'bg-emerald-400/10 border-emerald-400/30 text-emerald-300' },
+              { to: '/feature/flashcards', label: 'Flashcard Studio', hint: '3D recall cards → Spaced repetition retention', color: 'bg-sky-400/10 border-sky-400/30 text-sky-300' },
+            ].map((item) => (
+              <Link key={item.to} to={item.to}>
+                <div className={`rounded-2xl border px-4 py-3.5 flex flex-col gap-1.5 hover:opacity-90 transition-all cursor-pointer ${item.color}`}>
+                  <span className="text-xs font-semibold">{item.label}</span>
+                  <span className="text-[11px] font-mono opacity-70 leading-relaxed">{item.hint}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Bento Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -288,7 +316,7 @@ export default function DashboardPage() {
             <span className="text-white/40 text-xs font-mono hidden md:block">Select an engine to launch</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <BentoFeatureCard
               to="/feature/formatting"
               icon={Type}
@@ -303,15 +331,20 @@ export default function DashboardPage() {
               title="Cognitive Simplification"
               desc="Extract high-impact concepts and generate interactive mind maps to eliminate cognitive overload."
             />
-            <div className="sm:col-span-2 md:col-span-1">
-              <BentoFeatureCard
-                to="/feature/sensory"
-                icon={Eye}
-                tag="Engine 03"
-                title="Sensory Focus Mode"
-                desc="Strip away high-contrast distractions with ambient soundscapes and tailored Pomodoro sessions."
-              />
-            </div>
+            <BentoFeatureCard
+              to="/feature/sensory"
+              icon={Eye}
+              tag="Engine 03"
+              title="Sensory Focus Mode"
+              desc="Strip away high-contrast distractions with ambient soundscapes and tailored Pomodoro sessions."
+            />
+            <BentoFeatureCard
+              to="/feature/flashcards"
+              icon={Layers}
+              tag="Engine 04"
+              title="Flashcard Studio"
+              desc="Spaced-repetition active recall with 3D flip cards, AI concept extraction, and audio recitation."
+            />
           </div>
         </div>
 

@@ -371,12 +371,29 @@ export default function CognitiveSimplificationPage() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.1 }}
-                          className="flex gap-3 sm:gap-5 items-start p-4 sm:p-6 rounded-2xl bg-white/3 border border-white/5 hover:border-white/15 transition-all"
+                          className="flex gap-3 sm:gap-5 items-start justify-between p-4 sm:p-6 rounded-2xl bg-white/3 border border-white/5 hover:border-white/15 transition-all group"
                         >
-                          <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
-                            {`0${i + 1}`}
+                          <div className="flex gap-3 sm:gap-4 items-start flex-1 min-w-0">
+                            <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
+                              {`0${i + 1}`}
+                            </div>
+                            <p className="text-white text-sm sm:text-base md:text-lg font-sans leading-relaxed pt-0.5">{c.text}</p>
                           </div>
-                          <p className="text-white text-sm sm:text-base md:text-lg font-sans leading-relaxed pt-0.5">{c.text}</p>
+
+                          <button
+                            onClick={() => {
+                              if ('speechSynthesis' in window) {
+                                window.speechSynthesis.cancel();
+                                const u = new SpeechSynthesisUtterance(c.text);
+                                u.rate = 0.95;
+                                window.speechSynthesis.speak(u);
+                              }
+                            }}
+                            className="p-2 rounded-xl liquid-glass border border-white/10 text-white/40 group-hover:text-white hover:border-white/25 transition-all shrink-0"
+                            title="Recite concept aloud"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </button>
                         </motion.div>
                       ))}
                     </div>
@@ -384,6 +401,20 @@ export default function CognitiveSimplificationPage() {
                     <MindMap concepts={concepts} />
                   )}
                 </div>
+              </div>
+
+              {/* Action: Practice in Flashcard Studio */}
+              <div className="liquid-glass rounded-3xl p-5 sm:p-7 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block">Active Recall Memory Retention</span>
+                  <h4 className="text-base sm:text-lg font-serif text-white">Convert these concepts into 3D flashcards</h4>
+                </div>
+                <a
+                  href="/feature/flashcards"
+                  className="px-5 py-2.5 rounded-full bg-white text-black text-xs font-semibold hover:bg-gray-200 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] shrink-0"
+                >
+                  Open Flashcard Studio →
+                </a>
               </div>
 
               {/* Quiz Trigger / Quiz Card */}

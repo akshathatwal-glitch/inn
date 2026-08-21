@@ -12,6 +12,7 @@ import SensoryModePage from './pages/SensoryModePage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import LibraryPage from './pages/LibraryPage';
+import FlashcardsPage from './pages/FlashcardsPage';
 import { SettingsProvider } from './hooks/useSettings';
 import { ModalProvider } from './hooks/useModal';
 import './index.css';
@@ -43,6 +44,7 @@ function App() {
               <Route path="/feature/formatting" element={<DynamicFormattingPage />} />
               <Route path="/feature/simplification" element={<CognitiveSimplificationPage />} />
               <Route path="/feature/sensory" element={<SensoryModePage />} />
+              <Route path="/feature/flashcards" element={<FlashcardsPage />} />
               <Route path="/feature/profile" element={<ProfilePage />} />
               <Route path="/feature/library" element={<LibraryPage />} />
             </Routes>

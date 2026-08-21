@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Sparkles, CheckCircle2, Clock, Sliders, Zap, BookOpen, Layers, ShieldCheck, Eye } from 'lucide-react';
+import {
+  User, CheckCircle2, Clock, Sliders, Zap,
+  BookOpen, Layers, ShieldCheck, Eye, ArrowRight
+} from 'lucide-react';
 import AppShell from '../components/AppShell';
 import { useSettings, LearnerProfile } from '../hooks/useSettings';
 
@@ -10,48 +13,27 @@ interface ProfileOption {
   tag: string;
   icon: React.ElementType;
   desc: string;
-  colorScheme: {
-    badge: string;
-    borderActive: string;
-    bgActive: string;
-    iconBg: string;
-    iconText: string;
-    glow: string;
-  };
   presets: string[];
+  accent: string; // single tailwind text-color class for the active dot/check
 }
 
 const profiles: ProfileOption[] = [
   {
     id: 'dyslexia',
-    label: 'Dyslexia Profile',
+    label: 'Dyslexia',
     tag: 'Typography Engine',
     icon: BookOpen,
-    desc: 'Optimizes letterform recognition and eliminates visual crowding with phonetic segmentation.',
-    colorScheme: {
-      badge: 'text-amber-300 bg-amber-400/10 border-amber-400/30',
-      borderActive: 'border-amber-400',
-      bgActive: 'bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-transparent',
-      iconBg: 'bg-amber-500/20 border-amber-400/30',
-      iconText: 'text-amber-400',
-      glow: 'shadow-[0_0_30px_rgba(251,191,36,0.2)]',
-    },
-    presets: ['OpenDyslexic typography', 'Syllable phoneme coloring', 'Warm cream overlay', '2.0x line height'],
+    desc: 'Optimises letterform recognition with OpenDyslexic typeface, phonetic syllable segmentation, and warm reading overlays.',
+    accent: 'text-amber-300',
+    presets: ['OpenDyslexic typography', 'Syllable phoneme coloring', 'Warm cream overlay', '2.0× line height'],
   },
   {
     id: 'adhd',
-    label: 'ADHD Attention Flow',
+    label: 'ADHD',
     tag: 'Attention Engine',
     icon: Zap,
-    desc: 'Suppresses extraneous visual stimulus and establishes short, rhythmic study intervals.',
-    colorScheme: {
-      badge: 'text-cyan-300 bg-cyan-400/10 border-cyan-400/30',
-      borderActive: 'border-cyan-400',
-      bgActive: 'bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-transparent',
-      iconBg: 'bg-cyan-500/20 border-cyan-400/30',
-      iconText: 'text-cyan-400',
-      glow: 'shadow-[0_0_30px_rgba(34,211,238,0.2)]',
-    },
+    desc: 'Suppresses extraneous stimulus and structures focused study through short, rhythmic Pomodoro intervals.',
+    accent: 'text-sky-300',
     presets: ['Sensory mode active', '15m Pomodoro cycles', 'Sky contrast overlay', 'Reading ruler focus beam'],
   },
   {
@@ -59,36 +41,30 @@ const profiles: ProfileOption[] = [
     label: 'Visual Processing',
     tag: 'Clarity Engine',
     icon: Eye,
-    desc: 'Enhances font scale and stabilizes line tracking to prevent cognitive visual fatigue.',
-    colorScheme: {
-      badge: 'text-emerald-300 bg-emerald-400/10 border-emerald-400/30',
-      borderActive: 'border-emerald-400',
-      bgActive: 'bg-gradient-to-br from-emerald-500/15 via-teal-500/10 to-transparent',
-      iconBg: 'bg-emerald-500/20 border-emerald-400/30',
-      iconText: 'text-emerald-400',
-      glow: 'shadow-[0_0_30px_rgba(52,211,153,0.2)]',
-    },
-    presets: ['20px base font scale', 'Mint calm overlay', 'Dynamic cursor ruler', '2.2x vertical spacing'],
+    desc: 'Enhances font scale and stabilises line tracking to prevent cognitive visual fatigue and pattern shifting.',
+    accent: 'text-emerald-300',
+    presets: ['20px base font scale', 'Mint calm overlay', 'Dynamic cursor ruler', '2.2× vertical spacing'],
   },
   {
     id: 'multiple',
-    label: 'Combined Neuro-Profile',
-    tag: 'Comprehensive Support',
+    label: 'Multi-Profile',
+    tag: 'Comprehensive',
     icon: Layers,
-    desc: 'Comprehensive multi-modal assistive configuration for multifaceted learning profiles.',
-    colorScheme: {
-      badge: 'text-purple-300 bg-purple-400/10 border-purple-400/30',
-      borderActive: 'border-purple-400',
-      bgActive: 'bg-gradient-to-br from-purple-500/15 via-pink-500/10 to-transparent',
-      iconBg: 'bg-purple-500/20 border-purple-400/30',
-      iconText: 'text-purple-400',
-      glow: 'shadow-[0_0_30px_rgba(192,132,252,0.2)]',
-    },
+    desc: 'Full multi-modal configuration stacking every assistive layer for complex, overlapping neurodivergent profiles.',
+    accent: 'text-white',
     presets: ['OpenDyslexic + Syllables', 'Low-stimulation environment', '15m intervals', 'Full accessibility ruler'],
   },
 ];
 
 const timerOptions = [5, 10, 15, 20, 25, 30, 45];
+
+const stagger = {
+  container: { animate: { transition: { staggerChildren: 0.07 } } },
+  item: {
+    initial: { opacity: 0, y: 18 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+  },
+};
 
 export default function ProfilePage() {
   const { settings, updateSetting, applyProfile } = useSettings();
@@ -100,43 +76,38 @@ export default function ProfilePage() {
     setTimeout(() => setSaved(false), 2500);
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateSetting('studentName', e.target.value);
-  };
-
   const profileInitial = settings.studentName ? settings.studentName[0].toUpperCase() : 'L';
 
   return (
     <AppShell>
-      <div className="py-6 sm:py-10 md:py-16 px-4 sm:px-8 md:px-12 max-w-7xl mx-auto space-y-6 sm:space-y-10">
+      <div className="py-6 sm:py-10 md:py-16 px-4 sm:px-8 md:px-12 max-w-7xl mx-auto space-y-8 sm:space-y-12">
 
-        {/* Page Header */}
+        {/* ── Page Header ─────────────────────────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 pb-6 sm:pb-8 border-b border-white/10"
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 sm:pb-8 border-b border-white/10"
         >
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 to-pink-500/20 border border-violet-400/30 text-violet-300 text-[11px] sm:text-xs font-mono mb-3 sm:mb-4 shadow-[0_0_20px_rgba(139,92,246,0.2)]">
-              <Sparkles className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
-              <span>Learner Identity & Archetypes</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl text-white tracking-tight font-serif">
-              Learner <em className="italic bg-gradient-to-r from-purple-400 via-pink-300 to-amber-300 bg-clip-text text-transparent">Profile</em>.
+            <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block mb-3">
+              ● Learner Identity
+            </span>
+            <h1 className="text-3xl sm:text-5xl md:text-6xl text-white tracking-tight font-serif leading-tight">
+              Your <em className="italic text-white/50">Profile</em>.
             </h1>
           </div>
 
           <AnimatePresence>
             {saved && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="rounded-full px-5 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-400/50 text-emerald-300 text-xs font-mono flex items-center gap-2 shadow-[0_0_25px_rgba(52,211,153,0.3)]"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="liquid-glass rounded-full px-5 py-2.5 border border-white/15 text-white text-xs font-mono flex items-center gap-2"
               >
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Profile Presets Applied!</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Presets applied</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -144,137 +115,171 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
 
-          {/* Left Column: Name & Presets */}
+          {/* ── Left Column ─────────────────────────────────────────────────── */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="xl:col-span-8 space-y-6 sm:space-y-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="xl:col-span-8 space-y-7 sm:space-y-8"
           >
-            {/* Student Name Card */}
-            <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 relative overflow-hidden space-y-5 sm:space-y-6 shadow-xl">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-pink-500 to-amber-400" />
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 justify-between">
-                <div className="flex items-center gap-3.5 sm:gap-4">
-                  <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-2xl bg-gradient-to-tr from-violet-600 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-[0_0_25px_rgba(168,85,247,0.4)] border border-white/20 shrink-0">
+            {/* Student name */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 shadow-xl"
+            >
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div className="flex items-center gap-3.5">
+                  {/* Avatar */}
+                  <div className="w-11 h-11 rounded-2xl liquid-glass border border-white/15 flex items-center justify-center text-white font-bold text-base font-serif shrink-0">
                     {profileInitial}
                   </div>
                   <div>
-                    <h3 className="text-lg sm:text-xl font-serif text-white">Student Profile</h3>
-                    <p className="text-[11px] sm:text-xs text-white/50 font-mono">Persists in local storage</p>
+                    <h3 className="text-base font-serif text-white">Student Profile</h3>
+                    <p className="text-[11px] text-white/40 font-mono">Stored locally — zero cloud</p>
                   </div>
                 </div>
 
-                <div className="px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-violet-500/10 border border-violet-400/20 text-violet-300 text-[11px] sm:text-xs font-mono flex items-center gap-1.5 sm:gap-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-violet-400" />
-                  <span>Secure & Local</span>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full liquid-glass border border-white/10 text-white/50 text-[11px] font-mono">
+                  <ShieldCheck className="w-3 h-3" />
+                  <span>Private &amp; Local</span>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider text-white/50 font-mono block">Student Display Name</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] uppercase tracking-widest text-white/40 font-mono block">Display Name</label>
                 <input
                   type="text"
                   value={settings.studentName}
-                  onChange={handleNameChange}
-                  placeholder="Enter student name..."
-                  className="w-full bg-black/60 border border-white/15 focus:border-violet-400 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-violet-500/20 text-xs sm:text-sm font-sans transition-all"
+                  onChange={e => updateSetting('studentName', e.target.value)}
+                  placeholder="Enter your name…"
+                  className="w-full bg-white/[0.03] border border-white/10 focus:border-white/30 rounded-2xl px-4 py-3 text-white placeholder:text-white/20 focus:outline-none text-sm font-sans transition-all"
                 />
               </div>
-            </div>
+            </motion.div>
 
-            {/* Profile Selection Bento Cards */}
-            <div className="space-y-4 sm:space-y-5">
-              <div>
-                <span className="uppercase tracking-widest text-violet-400 text-[10px] sm:text-xs font-semibold font-mono block mb-1">Preset Configurations</span>
-                <h3 className="text-2xl sm:text-3xl font-serif text-white">Adaptive Learning <em className="italic text-white/50">Archetypes</em></h3>
-              </div>
+            {/* Profile archetype cards */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="mb-5"
+              >
+                <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block mb-1">Preset Archetypes</span>
+                <h2 className="text-2xl sm:text-3xl font-serif text-white tracking-tight">
+                  Adaptive <em className="italic text-white/50">Configurations</em>
+                </h2>
+              </motion.div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                {profiles.map(({ id, label, tag, icon: Icon, desc, colorScheme, presets }) => {
+              <motion.div
+                variants={stagger.container}
+                initial="initial"
+                animate="animate"
+                className="space-y-3"
+              >
+                {profiles.map(({ id, label, tag, icon: Icon, desc, accent, presets }) => {
                   const isActive = settings.profile === id;
                   return (
-                    <motion.div
+                    <motion.button
                       key={id}
-                      whileHover={{ y: -3 }}
-                      whileTap={{ scale: 0.98 }}
+                      variants={stagger.item}
+                      whileHover={{ x: 4 }}
+                      whileTap={{ scale: 0.99 }}
                       onClick={() => handleSelectProfile(id)}
-                      className={`liquid-glass rounded-3xl p-6 sm:p-7 border transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden shadow-lg ${
+                      className={`w-full text-left liquid-glass rounded-2xl sm:rounded-3xl px-5 sm:px-7 py-5 sm:py-6 border transition-all duration-300 flex items-start gap-5 group ${
                         isActive
-                          ? `${colorScheme.borderActive} ${colorScheme.bgActive} ${colorScheme.glow}`
-                          : 'border-white/10 hover:border-white/25 hover:bg-white/5'
+                          ? 'border-white/30 bg-white/[0.04]'
+                          : 'border-white/8 hover:border-white/20 hover:bg-white/[0.02]'
                       }`}
                     >
-                      <div className="space-y-3 sm:space-y-4">
-                        <div className="flex justify-between items-start">
-                          <div className={`w-9 sm:w-10 h-9 sm:h-10 rounded-2xl ${colorScheme.iconBg} border flex items-center justify-center ${colorScheme.iconText} shadow-sm shrink-0`}>
-                            <Icon className="w-4 sm:w-5 h-4 sm:h-5" />
-                          </div>
-
-                          <span className={`text-[9px] sm:text-[10px] font-mono px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border ${colorScheme.badge}`}>
-                            {tag}
-                          </span>
-                        </div>
-
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-lg sm:text-xl font-bold text-white tracking-tight">{label}</h4>
-                            {isActive && <CheckCircle2 className={`w-4 h-4 ${colorScheme.iconText} shrink-0`} />}
-                          </div>
-                          <p className="text-white/60 text-xs leading-relaxed mt-1.5">{desc}</p>
-                        </div>
+                      {/* Left: icon + active ring */}
+                      <div className={`mt-0.5 w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-all ${
+                        isActive ? 'border-white/30 bg-white/10' : 'border-white/10 bg-white/5 group-hover:bg-white/8'
+                      }`}>
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-white/50 group-hover:text-white/80'}`} />
                       </div>
 
-                      <div className="mt-5 sm:mt-6 pt-4 border-t border-white/10 space-y-1.5 sm:space-y-2">
-                        {presets.map(p => (
-                          <div key={p} className="flex items-center gap-2 text-[10px] sm:text-[11px] text-white/70 font-mono">
-                            <span className={`w-1.5 h-1.5 rounded-full ${colorScheme.iconText} shadow-[0_0_8px_currentColor] shrink-0`} />
-                            <span className="leading-snug">{p}</span>
-                          </div>
-                        ))}
+                      {/* Centre: text */}
+                      <div className="flex-1 min-w-0 space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-white font-semibold text-sm">{label}</span>
+                          <span className="text-[9px] font-mono text-white/40 uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/10 bg-white/5">{tag}</span>
+                        </div>
+                        <p className="text-white/50 text-xs leading-relaxed">{desc}</p>
+
+                        {/* Presets — shown on active */}
+                        <AnimatePresence>
+                          {isActive && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="pt-3 mt-2 border-t border-white/10 grid grid-cols-2 gap-x-4 gap-y-1.5 overflow-hidden"
+                            >
+                              {presets.map(p => (
+                                <div key={p} className="flex items-center gap-1.5 text-[11px] font-mono text-white/60">
+                                  <span className={`w-1 h-1 rounded-full shrink-0 ${accent} bg-current`} />
+                                  {p}
+                                </div>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
-                    </motion.div>
+
+                      {/* Right: check or arrow */}
+                      <div className="shrink-0 mt-1">
+                        {isActive
+                          ? <CheckCircle2 className={`w-4 h-4 ${accent}`} />
+                          : <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-white/50 group-hover:translate-x-0.5 transition-all" />
+                        }
+                      </div>
+                    </motion.button>
                   );
                 })}
-              </div>
+              </motion.div>
             </div>
           </motion.div>
 
-          {/* Right Column: Active Settings & Focus Duration */}
+          {/* ── Right Column ────────────────────────────────────────────────── */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="xl:col-span-4 space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="xl:col-span-4 space-y-5"
           >
-            {/* Attention Span Timer Preset */}
-            <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 space-y-5 sm:space-y-6 relative overflow-hidden shadow-xl">
-              <div className="flex items-center gap-3 pb-2 border-b border-white/10">
-                <div className="w-8 h-8 rounded-xl bg-violet-500/20 border border-violet-400/30 flex items-center justify-center text-violet-400 shrink-0">
-                  <Clock className="w-4 h-4" />
+
+            {/* Focus Cycle timer */}
+            <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 space-y-5 shadow-xl">
+              <div className="flex items-center gap-3 pb-4 border-b border-white/8">
+                <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                  <Clock className="w-4 h-4 text-white/60" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-serif text-white">Default Focus Cycle</h3>
-                  <span className="text-[11px] sm:text-xs text-violet-400/80 font-mono">Attention Span Tuning</span>
+                  <h3 className="text-base font-serif text-white">Focus Cycle</h3>
+                  <span className="text-[11px] text-white/40 font-mono">Session duration</span>
                 </div>
               </div>
 
-              <p className="text-white/60 text-xs leading-relaxed">
-                Configure your target study interval duration. Breaks are automatically scheduled after each cycle.
+              <p className="text-white/50 text-xs leading-relaxed">
+                Set your default study interval. Breaks are auto-queued after each cycle.
               </p>
 
-              <div className="flex gap-2 sm:gap-2.5 flex-wrap">
+              {/* Segmented timer picker */}
+              <div className="grid grid-cols-4 gap-2">
                 {timerOptions.map(mins => {
                   const isSelected = settings.focusTimerMinutes === mins;
                   return (
                     <button
                       key={mins}
                       onClick={() => updateSetting('focusTimerMinutes', mins)}
-                      className={`px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-mono font-semibold transition-all ${
+                      className={`py-2 rounded-xl text-xs font-mono font-semibold transition-all ${
                         isSelected
-                          ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400 scale-105'
-                          : 'liquid-glass text-white/70 hover:text-white border-white/10 hover:border-white/25'
+                          ? 'bg-white text-black shadow-[0_0_18px_rgba(255,255,255,0.15)]'
+                          : 'liquid-glass border border-white/10 text-white/50 hover:text-white hover:border-white/25'
                       }`}
                     >
                       {mins}m
@@ -284,32 +289,32 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Current Configuration Summary Table with Colorful Badges */}
-            <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 space-y-5 sm:space-y-6 shadow-xl">
-              <div className="flex items-center gap-3 pb-2 border-b border-white/10">
-                <div className="w-8 h-8 rounded-xl bg-pink-500/20 border border-pink-400/30 flex items-center justify-center text-pink-400 shrink-0">
-                  <Sliders className="w-4 h-4" />
+            {/* Active parameters */}
+            <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 space-y-5 shadow-xl">
+              <div className="flex items-center gap-3 pb-4 border-b border-white/8">
+                <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                  <Sliders className="w-4 h-4 text-white/60" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-serif text-white">Active Parameters</h3>
-                  <span className="text-[11px] sm:text-xs text-pink-400/80 font-mono">Engine Calibration</span>
+                  <h3 className="text-base font-serif text-white">Active Parameters</h3>
+                  <span className="text-[11px] text-white/40 font-mono">Live engine state</span>
                 </div>
               </div>
 
-              <div className="space-y-2.5 sm:space-y-3">
+              <div className="space-y-0">
                 {[
-                  { label: 'Typography', val: settings.isDyslexicFont ? 'OpenDyslexic' : 'System Sans', color: 'text-amber-400 bg-amber-400/10 border-amber-400/20' },
-                  { label: 'Font Scale', val: `${settings.fontSize}px`, color: 'text-purple-400 bg-purple-400/10 border-purple-400/20' },
-                  { label: 'Line Spacing', val: `${settings.lineHeight.toFixed(1)}x`, color: 'text-blue-400 bg-blue-400/10 border-blue-400/20' },
-                  { label: 'Letter Spacing', val: `${settings.letterSpacing}px`, color: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20' },
-                  { label: 'Color Overlay', val: settings.overlayColor.toUpperCase(), color: 'text-yellow-300 bg-yellow-400/10 border-yellow-400/20' },
-                  { label: 'Phoneme Syllables', val: settings.syllableHighlight ? 'Enabled' : 'Disabled', color: settings.syllableHighlight ? 'text-pink-400 bg-pink-400/10 border-pink-400/20' : 'text-white/40 bg-white/5 border-white/10' },
-                  { label: 'Reading Ruler', val: settings.readingRuler ? 'Enabled' : 'Disabled', color: settings.readingRuler ? 'text-amber-300 bg-amber-400/10 border-amber-400/20' : 'text-white/40 bg-white/5 border-white/10' },
-                  { label: 'Sensory Mode', val: settings.sensoryMode ? 'Active' : 'Standard', color: settings.sensoryMode ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' : 'text-white/40 bg-white/5 border-white/10' },
-                ].map(({ label, val, color }) => (
-                  <div key={label} className="flex justify-between items-center py-1.5 border-b border-white/5 text-xs gap-2">
-                    <span className="text-white/60 font-medium truncate">{label}</span>
-                    <span className={`px-2 sm:px-2.5 py-0.5 rounded-full font-mono font-semibold text-[11px] border shrink-0 ${color}`}>
+                  { label: 'Typography', val: settings.isDyslexicFont ? 'OpenDyslexic' : 'System Sans' },
+                  { label: 'Font Scale', val: `${settings.fontSize}px` },
+                  { label: 'Line Spacing', val: `${settings.lineHeight.toFixed(1)}×` },
+                  { label: 'Letter Spacing', val: `${settings.letterSpacing}px` },
+                  { label: 'Overlay', val: settings.overlayColor.toUpperCase() },
+                  { label: 'Syllables', val: settings.syllableHighlight ? 'On' : 'Off', flag: settings.syllableHighlight },
+                  { label: 'Ruler', val: settings.readingRuler ? 'On' : 'Off', flag: settings.readingRuler },
+                  { label: 'Sensory Mode', val: settings.sensoryMode ? 'Active' : 'Off', flag: settings.sensoryMode },
+                ].map(({ label, val, flag }) => (
+                  <div key={label} className="flex justify-between items-center py-2.5 border-b border-white/5 text-xs gap-2 last:border-none">
+                    <span className="text-white/50 font-medium">{label}</span>
+                    <span className={`font-mono font-semibold ${flag === true ? 'text-emerald-400' : flag === false ? 'text-white/30' : 'text-white/80'}`}>
                       {val}
                     </span>
                   </div>
@@ -319,11 +324,17 @@ export default function ProfilePage() {
               {settings.profile && (
                 <button
                   onClick={() => updateSetting('profile', null)}
-                  className="w-full py-2.5 rounded-full liquid-glass border border-white/10 hover:border-white/20 text-white/50 hover:text-white text-xs font-mono transition-all"
+                  className="w-full py-2.5 rounded-xl liquid-glass border border-white/10 hover:border-white/20 text-white/40 hover:text-white text-xs font-mono transition-all"
                 >
-                  Reset to Custom Settings
+                  Reset to defaults
                 </button>
               )}
+            </div>
+
+            {/* Privacy footnote */}
+            <div className="px-4 py-3 rounded-2xl border border-white/6 text-white/30 text-[11px] font-mono flex items-start gap-2 leading-relaxed">
+              <ShieldCheck className="w-3.5 h-3.5 shrink-0 mt-0.5 text-white/20" />
+              All settings are saved to localStorage. No server contact, no accounts, no tracking.
             </div>
           </motion.div>
 

@@ -217,13 +217,164 @@ function EqualizerBars() {
   );
 }
 
+// ── Real Web Audio Soundscape Synthesizer ──────────────────────────────────────
+class SoundscapeEngine {
+  private ctx: AudioContext | null = null;
+  private currentNodes: { stop: () => void }[] = [];
+
+  private initCtx() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      this.ctx = new AudioCtx();
+    }
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  stopAll() {
+    this.currentNodes.forEach(n => {
+      try { n.stop(); } catch (e) {}
+    });
+    this.currentNodes = [];
+  }
+
+  playWhiteNoise(volume = 0.12) {
+    this.initCtx();
+    this.stopAll();
+    if (!this.ctx) return;
+
+    const bufferSize = this.ctx.sampleRate * 2;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 1000;
+
+    const gain = this.ctx.createGain();
+    gain.gain.value = volume;
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    noise.start();
+    this.currentNodes.push({ stop: () => { noise.stop(); noise.disconnect(); } });
+  }
+
+  playRain(volume = 0.15) {
+    this.initCtx();
+    this.stopAll();
+    if (!this.ctx) return;
+
+    const bufferSize = this.ctx.sampleRate * 2;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0.0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = data[i];
+      data[i] *= 3.5;
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 600;
+    filter.Q.value = 0.8;
+
+    const gain = this.ctx.createGain();
+    gain.gain.value = volume;
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    noise.start();
+    this.currentNodes.push({ stop: () => { noise.stop(); noise.disconnect(); } });
+  }
+
+  playBinauralFocus(volume = 0.1) {
+    this.initCtx();
+    this.stopAll();
+    if (!this.ctx) return;
+
+    // 200Hz base + 240Hz tone = 40Hz Gamma Beat (ADHD Focus)
+    const osc1 = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const merger = this.ctx.createChannelMerger(2);
+
+    osc1.frequency.value = 200;
+    osc2.frequency.value = 240;
+
+    const gain = this.ctx.createGain();
+    gain.gain.value = volume;
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc1.start();
+    osc2.start();
+    this.currentNodes.push({
+      stop: () => {
+        try { osc1.stop(); osc2.stop(); } catch (e) {}
+      }
+    });
+  }
+
+  playBrownNoise(volume = 0.16) {
+    this.initCtx();
+    this.stopAll();
+    if (!this.ctx) return;
+
+    const bufferSize = this.ctx.sampleRate * 2;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0.0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = data[i];
+      data[i] *= 3.5;
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+
+    const gain = this.ctx.createGain();
+    gain.gain.value = volume;
+
+    noise.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    noise.start();
+    this.currentNodes.push({ stop: () => { noise.stop(); noise.disconnect(); } });
+  }
+}
+
+const soundscape = new SoundscapeEngine();
+
 // ── Ambient Sounds ────────────────────────────────────────────────────────────
 const SOUNDS = [
   { id: 'none', label: 'Silent', icon: VolumeX },
   { id: 'white', label: 'White Noise', icon: Wind },
+  { id: 'brown', label: 'Brown Noise', icon: Sparkles },
   { id: 'rain', label: 'Rainfall', icon: CloudRain },
-  { id: 'lofi', label: 'Lo-fi', icon: Music },
-  { id: 'cafe', label: 'Café', icon: Coffee },
+  { id: 'binaural', label: '40Hz Gamma', icon: Music },
 ];
 
 export default function SensoryModePage() {
@@ -234,6 +385,28 @@ export default function SensoryModePage() {
   const [focusText, setFocusText] = useState('Paste your study material here and enter full-screen mode to eliminate visual distractions.\n\nSensory Mode softens harsh contrasts, suppresses digital clutter, and provides ambient soundscapes to anchor your cognitive attention.');
   const [fullscreen, setFullscreen] = useState(false);
   const [showBreak, setShowBreak] = useState(false);
+
+  // Audio switcher
+  const handleSoundSelect = (soundId: string) => {
+    setActiveSound(soundId);
+    if (soundId === 'none') {
+      soundscape.stopAll();
+    } else if (soundId === 'white') {
+      soundscape.playWhiteNoise();
+    } else if (soundId === 'brown') {
+      soundscape.playBrownNoise();
+    } else if (soundId === 'rain') {
+      soundscape.playRain();
+    } else if (soundId === 'binaural') {
+      soundscape.playBinauralFocus();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      soundscape.stopAll();
+    };
+  }, []);
 
   const handleComplete = () => setShowBreak(true);
 
@@ -465,7 +638,7 @@ export default function SensoryModePage() {
                   return (
                     <button
                       key={id}
-                      onClick={() => setActiveSound(id)}
+                      onClick={() => handleSoundSelect(id)}
                       className={`relative z-10 flex flex-col items-center gap-2 p-3 sm:p-4 rounded-2xl text-xs font-semibold transition-all duration-300 ${
                         isSelected
                           ? 'text-black font-bold shadow-[0_0_25px_rgba(255,255,255,0.25)]'
